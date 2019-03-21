@@ -6,6 +6,7 @@ import com.intellij.util.messages.MessageBusConnection;
 import org.jetbrains.annotations.NotNull;
 import com.intellij.openapi.project.Project;
 
+import static com.intellij.execution.process.ProcessOutputTypes.STDOUT;
 import static com.intellij.openapi.util.Clock.getTime;
 
 public class ExecutionTime implements ProjectComponent {
@@ -25,6 +26,21 @@ public class ExecutionTime implements ProjectComponent {
                     @NotNull String executorId, @NotNull ExecutionEnvironment env,
                     @NotNull ProcessHandler handler, int exitCode) {
                 float exTime = getTime() - startTime;
+                String msg = " minutes";
+                if (exTime < 60000) {
+                    if (exTime < 1000) {
+                        msg = " milliseconds";
+                    }
+                    else {
+                        msg = " seconds";
+                        exTime /= 1000;
+                    }
+                }
+                else {
+                    exTime /= 60000;
+                }
+                handler.notifyTextAvailable("Code executed by: " + (exTime) + msg, STDOUT );
+
             }
         });
 
